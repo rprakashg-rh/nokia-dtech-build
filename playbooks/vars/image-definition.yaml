@@ -1,0 +1,22 @@
+builder_blueprint_name: "RHEL-Server"
+builder_blueprint_description: "RHEL Server Golden Image"
+builder_blueprint_distro: "rhel-9"
+builder_compose_type: image-installer
+builder_compose_pkgs:
+- "insights-client"
+- "rhc"
+- "rhc-worker-playbook"
+- "ansible-core"
+- "rhel-system-roles"
+- "cockpit"
+builder_compose_customizations:
+  services:
+    enabled: ["sshd"]
+  user:
+    name: "{{ admin_user }}"
+    description: "Admin user to login to workstation"
+    password: "{{ admin_password }}"
+    key: "{{ admin_ssh_key }}"
+    home: "/home/{{ admin_user }}/"
+    shell: "/usr/bin/bash"
+    groups: ["users", "wheel"]

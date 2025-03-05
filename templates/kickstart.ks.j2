@@ -1,0 +1,40 @@
+###############################################
+# Unattended Anaconda Kickstart File for RHEL Server
+###############################################
+
+# System language and keyboard layout
+lang en_US.UTF-8
+keyboard us
+
+timezone America/Chicago --utc
+
+# Root password
+rootpw --plaintext {{ rootpw }}
+
+# Network configuration
+device eth0 --bootproto dhcp --onboot yes
+
+# Install RHEL
+install --device=/dev/sdX
+
+# Bootloader configuration
+bootloader --location=mbr
+
+# Partitioning
+clearpart --all --initlabel
+autopart --type=lvm
+
+# Skip the initial setup
+firstboot --disable
+
+# Disable firewall and SELinux
+firewall --disabled
+selinux --disabled
+
+# Packages to install
+%packages
+@server
+%end
+
+# Reboot after installation
+poweroff
