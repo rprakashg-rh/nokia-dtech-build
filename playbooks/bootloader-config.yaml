@@ -1,6 +1,7 @@
 ---
 - name: Configure Boot Loader
-  host: vpac-rhel-200
+  hosts: vpac-rhel-200
+  gather_facts: yes
 
   vars:
     bootloader_settings:

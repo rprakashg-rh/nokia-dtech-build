@@ -1,0 +1,25 @@
+---
+- name: Configure Timesync
+  hosts: vpac-rhel-200
+  gather_facts: yes
+  vars:
+    rt_config:
+      non_rt_cores_cat: f
+      non_rt_cache_cat: "0x600"
+      rt_cache: "0x1ff"
+      rt_cores: 12-15
+      cpumask: 40000
+      nic: "ens1f0"
+
+    timesync_ntp_provider: chrony
+    timesync_ptp_domains:
+      - number: 0
+        interfaces:
+        - "{{ rt_config.nic }}"
+        transport: L2
+    timesync_ntp_servers:
+    - hostname: 192.168.200.77
+      iburst: true
+
+  roles:
+  - linux-system-roles.timesync
