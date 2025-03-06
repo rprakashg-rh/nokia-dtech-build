@@ -4,10 +4,11 @@
   gather_facts: yes
   vars:
     kernel_settings_sysctl:
-    - name: kernel.nmi_watchdog
-      value: 0
-    - name: kernel.sched_rt_runtime_us
-      value: -1
-    - name: vm.nr_h
+      - name: kernel.nmi_watchdog
+        value: 0
+      - name: kernel.sched_rt_runtime_us
+        value: -1
+      - name: vm.nr_hugepages
+        value: 10
   roles:
   - linux-system-roles.kernel_settings
