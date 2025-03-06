@@ -2,4 +2,4 @@
 .vscode/settings.json
 
 vars/secrets.yml
-
+playbooks/inventory
