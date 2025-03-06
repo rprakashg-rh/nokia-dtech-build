@@ -1,8 +1,7 @@
 ---
 - name: Configure Boot Loader
   host: vpac-rhel-200
-  vars_files:
-  - playbooks/secrets.yml
+
   vars:
     bootloader_settings:
     - kernel: ALL
