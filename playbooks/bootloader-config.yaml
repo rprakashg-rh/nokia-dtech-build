@@ -1,6 +1,8 @@
 ---
 - name: Configure Boot Loader
   host: vpac-rhel-200
+  vars_files:
+  - playbooks/secrets.yml
   vars:
     bootloader_settings:
     - kernel: ALL
@@ -35,6 +37,5 @@
         value: 0
       - name: ipv6.disable
         value: 1
-
   roles:
   - linux-system-roles.bootloader
