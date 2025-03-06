@@ -1,0 +1,47 @@
+---
+# VPac
+- name: VPAC setup
+  hosts: vpac-rhel-200
+  gather_facts: yes
+  
+  vars:
+    vpac_network:
+      station_nic: ens1f1
+      ip4: "172.16.1.201/22"
+      gw4: 172.16.8.1
+      dns4: 8.8.8.8
+
+    profile: realtime-virtual-host
+    
+    rt_config:
+      non_rt_cores_cat: f
+      non_rt_cache_cat: "0x600"
+      rt_cache: "0x1ff"
+      rt_cores: 12-15
+      cpumask: 40000
+      nic: "ens1f0"
+    
+    tuned:
+      rt_cores: 11-21
+    
+    ssc600_ptp:
+      status_dir: /home/libvirt-local/ptp/
+      socket: /var/run/timemaster/ptp4l.0.socket
+      ptp4l_options: "-l 5 -A --clientOnly=1 --step_threshold=0.1"
+
+    ssc600_vm:
+      name: ssc600-1
+      path: /home/libvirt-local/
+      core0: 15
+      core1: 14
+      core2: 13
+      core3: 12
+      core_qemu: 16-17
+      rt_nic: "{{ rt_config.nic }}"
+    
+    ssc600_bundle:
+      path: /root/SSC600_SW_KVM-1.5.0.cab
+      extracted_path: /root
+
+  roles:
+  - vpac
