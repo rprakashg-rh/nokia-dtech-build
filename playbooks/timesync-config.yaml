@@ -18,7 +18,7 @@
         - "{{ rt_config.nic }}"
         transport: L2
     timesync_ntp_servers:
-    - hostname: 192.168.200.77
+    - hostname: 172.16.11.254
       iburst: true
 
   roles:
