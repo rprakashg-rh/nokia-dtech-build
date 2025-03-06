@@ -44,4 +44,4 @@
       extracted_path: /root
 
   roles:
-  - vpac
+  - kwozyman.vpac
