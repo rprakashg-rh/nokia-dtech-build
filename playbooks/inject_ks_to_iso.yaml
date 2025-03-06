@@ -1,0 +1,82 @@
+---
+# download artifact and inject custom kickstart
+- name: Download compose artifact and inject custom kickstart
+  hosts: imagebuilder
+  gather_facts: yes
+  become: true
+  vars_files:
+  - vars/image-definition.yaml
+  vars:
+    iso_bucket_name: "iso"
+    gateway: "172.16.8.1"
+    ip: "172.16.10.200"
+    nameservers: "8.8.8.8,8.8.4.4"
+    hostname: "rhel-vpac-01"
+    job_id: b2f66ad7-694c-4c8e-8387-69c7be7c263a
+    rootpw: "$6$MaQ0vwnDfi0NMi61$D/dWyUsstJaMdGo3nv4.pVolrcgY6suXWx8zNjO.Cydyo1Q8YVeZ0Zrdhn6jt.KA6KGzea98sJguOTyLzABX41"
+  tasks:
+  - name: Get/Set blueprint version
+    block:
+    - name: Get blueprint version from osbuild
+      ansible.builtin.shell: |
+        composer-cli --json blueprints show "{{ builder_blueprint_name }}" | jq -r ".[].body.blueprints[].version"
+      register: blueprint_show_result
+    - name: Check a version was retrieved
+      assert:
+        that:
+        - blueprint_show_result != ""
+        fail_msg: "Blueprint version was not retrieved"
+    - name: Set blueprint version
+      ansible.builtin.set_fact:
+        blueprint_version: "{{ blueprint_show_result.stdout }}"
+
+  - name: Download artifact
+    block:
+    - name: Create temp dir
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: "artifacts"
+      register: tempdir_result
+    - name: Set artifact dir
+      set_fact:
+        artifact_dir: "{{ tempdir_result.path }}"
+    - name: Set extension
+      block:
+      - name: When image-installer
+        when: builder_compose_type == "image-installer"
+        ansible.builtin.set_fact:
+          artifact_ext: "iso"
+      - name: Set full artifact file in fact
+        ansible.builtin.set_fact:
+          artifact_file: "{{ artifact_dir }}/{{ builder_blueprint_name }}_{{ blueprint_version }}.{{ artifact_ext }}"
+    - name: Download artifact
+      ansible.builtin.shell: |
+        composer-cli compose image {{ job_id }} --filename {{ artifact_file }}
+            
+  - name: Inject kickstart
+    block:
+    - name: Create a temp file
+      ansible.builtin.tempfile:
+        state: file
+        suffix: ks
+      register: ksfile_result
+    - name: Set in fact
+      ansible.builtin.set_fact:
+        ksfile: "{{ ksfile_result.path }}"
+    - name: Generate ks content
+      ansible.builtin.template:
+        src: kickstart.ks.j2
+        dest: ksfile
+    - name: Set ISO with custom ks name in fact
+      ansible.builtin.set_fact:
+        iso_with_custom_ks: "{{ artifact_dir }}/{{ builder_blueprint_name }}_{{ blueprint_version }}-ks.{{ artifact_ext }}"
+    - name: Inject kickstart into ISO
+      infra.osbuild.inject_ks:
+        kickstart: "{{ ksfile }}"
+        src_iso: "{{ artifact_file }}"
+        dest_iso: "{{ iso_with_custom_ks }}"
+  - name: Uploading ISO with custom kickstart
+    ansible.builtin.shell: |
+      aws s3 cp "{{ iso_with_custom_ks }}" "s3://{{ iso_bucket_name }}/{{ iso_with_custom_ks | basename }}"
+
+

@@ -1,6 +1,8 @@
 ###############################################
 # Unattended Anaconda Kickstart File for RHEL Server
 ###############################################
+# Un attended install
+text --non-interactive
 
 # System language and keyboard layout
 lang en_US.UTF-8
@@ -9,10 +11,13 @@ keyboard us
 timezone America/Chicago --utc
 
 # Root password
-rootpw --plaintext {{ rootpw }}
+rootpw -iscrypted {{ rootpw }}
 
 # Network configuration
-device eth0 --bootproto dhcp --onboot yes
+device ens192 --bootproto dhcp --onboot yes
+
+network  --bootproto=static --device=ens192 --gateway={{ gateway }} --ip={{ ip }} --nameserver={{ nameservers }} --netmask=255.255.252.0 --noipv6 --activate
+network  --hostname={{ hostname }}
 
 # Install RHEL
 install --device=/dev/sdX

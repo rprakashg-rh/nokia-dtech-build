@@ -5,7 +5,9 @@ Nokia DTech buid
 Installing ansible collection
 
 ```sh
-ansible-galaxy collection install git+https://github.com/kwozyman/vpac.git,master
+# ansible-galaxy collection install git+https://github.com/kwozyman/vpac.git,master
+# Since PR is not merged and changes are sitting in my fork lets install collection from my fork
+ansible-galaxy collection install git+https://github.com/rprakashg-rh/vpac.git,master
 ```
 
 ## Steps to create Ansible Vault

@@ -3,9 +3,11 @@
   hosts: imagebuilder
   become: true
   vars_files:
-  - vars/image-definition.yml
+  - vars/image-definition.yaml
   vars:
     iso_bucket_name: "iso"
+    retries: 100
+    delay: 60
   tasks:
   - name: Import secrets
     ansible.builtin.include_vars:
@@ -96,28 +98,6 @@
     - name: Download artifact
       ansible.builtin.shell: |
         composer-cli compose image {{ job_id }} --filename {{ artifact_file }}
-  - name: Inject kickstart
-    block:
-    - name: Create a temp file
-      ansible.builtin.tempfile:
-        state: file
-        suffix: ks
-      register: ksfile_result
-    - name: Set in fact
-      ansible.builtin.set_fact:
-        ksfile: "{{ ksfile_result.path }}"
-    - name: Generate ks content
-      ansible.builtin.template:
-        src: templates/kickstart.ks.j2
-        dest: ksfile
-    - name: Set ISO with custom ks name in fact
-      ansible.builtin.set_fact:
-        iso_with_custom_ks: "{{ artifact_dir }}/{{ builder_blueprint_name }}_{{ blueprint_version }}-ks.{{ artifact_ext }}"
-    - name: Inject kickstart into ISO
-      infra.osbuild.inject_ks:
-        kickstart: "{{ kickstart }}"
-        src_iso: "{{ artifact_file }}"
-        dest_iso: "{{ iso_with_custom_ks }}"
   - name: Upload ISOs to S3 bucket
     block:
     - name: Uploading ImageBuilder generated ISO 
