@@ -6,7 +6,7 @@
   
   vars_files:
   - vars/secrets.yml
-  - vats/vpac-settings.yaml
+  - vars/vpac-settings.yaml
   
   tasks:
   - name: vpac setup
