@@ -52,7 +52,17 @@
         command: "SetAttributes"
         attributes:
           "ProcessorSettings.ProcEnergyPerfBias": "Performance"
-          
+
+  - name: Enable Virtualization Technology (VT-x/VMX)
+    dell.dellemc_idrac.idrac_redfish_config:
+      idrac_ip: "{{ idrac_host }}"
+      idrac_user: "{{ idrac_user }}"
+      idrac_password: "{{ idrac_password }}"
+      category: "Bios"
+      command: "SetAttributes"
+      attributes:
+        "ProcVirtualization": "Enabled"
+
   - name: Apply Changes and Reboot
     dellemc.openmanage.idrac_redfish_config:
       idrac_ip: "{{ idrac_host }}"
