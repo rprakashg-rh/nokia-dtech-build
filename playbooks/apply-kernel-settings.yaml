@@ -1,5 +1,5 @@
 ---
-- name: Configure Kernel bootloader_settings
+- name: Apply Kernel settings
   hosts: vpac-rhel-200
   gather_facts: yes
   vars:

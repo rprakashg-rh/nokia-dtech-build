@@ -1,0 +1,13 @@
+---
+# VPac
+- name: VPAC setup
+  hosts: vpac-rhel-200
+  gather_facts: yes
+  
+  vars_files:
+  - vats/vpac-settings.yaml
+    
+  tasks:
+  - name: vpac setup
+    ansible.builtin.include_role:
+      name: kwozyman.vpac

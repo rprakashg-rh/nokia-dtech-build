@@ -1,5 +1,5 @@
 ---
-- name: Configure Boot Loader
+- name: Apply Bootloader settings
   hosts: vpac-rhel-200
   gather_facts: yes
 
@@ -37,5 +37,6 @@
         value: 0
       - name: ipv6.disable
         value: 1
+
   roles:
   - linux-system-roles.bootloader
