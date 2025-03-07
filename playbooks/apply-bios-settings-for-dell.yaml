@@ -1,0 +1,62 @@
+---
+# Install openmanage collection by running -> `ansible-galaxy collection install dellemc.openmanage` before running this playbook
+- name: Apply BIOS settings for Dell Hardware via iDRAC
+  hosts: vpac-rhel-200
+  gather_facts: no
+  vars_files:
+  - vars/secrets.yml
+  vars:
+    idrac_host: ""
+  tasks:
+  - name: Disable Turbo Boost
+    dellemc.openmanage.idrac_redfish_config:
+      idrac_ip: "{{ idrac_host }}"
+      idrac_user: "{{ idrac_username }}"
+      idrac_password: "{{ idrac_password }}"
+      command: "SetAttributes"
+      attributes:
+        "ProcessorSettings.ProcTurboMode": "Disabled"
+
+  - name: Disable Hyper-Threading
+    dellemc.openmanage.idrac_redfish_config:
+      idrac_ip: "{{ idrac_host }}"
+      idrac_user: "{{ idrac_username }}"
+      idrac_password: "{{ idrac_password }}"
+      command: "SetAttributes"
+      attributes:
+        "ProcessorSettings.ProcHyperThreading": "Disabled"
+
+  - name: Disable all power management
+    block:
+    - name: Disable C-States
+      dellemc.openmanage.idrac_redfish_config:
+        idrac_ip: "{{ idrac_host }}"
+        idrac_user: "{{ idrac_username }}"
+        idrac_password: "{{ idrac_password }}"
+        command: "SetAttributes"
+        attributes:
+          "ProcessorSettings.ProcCStates": "Disabled"
+    - name: Set Power Management Policy to Maximum Performance
+      dellemc.openmanage.idrac_redfish_config:
+        idrac_ip: "{{ idrac_host }}"
+        idrac_user: "{{ idrac_username }}"
+        idrac_password: "{{ idrac_password }}"
+        command: "SetAttributes"
+        attributes:
+          "BiosSettings.PowerProfile": "MaxPerformance"
+    - name: Disable Energy Efficient Policy
+      dellemc.openmanage.idrac_redfish_config:
+        idrac_ip: "{{ idrac_host }}"
+        idrac_user: "{{ idrac_username }}"
+        idrac_password: "{{ idrac_password }}"
+        command: "SetAttributes"
+        attributes:
+          "ProcessorSettings.ProcEnergyPerfBias": "Performance"
+          
+  - name: Apply Changes and Reboot
+    dellemc.openmanage.idrac_redfish_config:
+      idrac_ip: "{{ idrac_host }}"
+      idrac_user: "{{ idrac_username }}"
+      idrac_password: "{{ idrac_password }}"
+      command: "ApplySettings"
+      reset_type: "GracefulRestart"
