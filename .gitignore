@@ -3,3 +3,5 @@
 
 vars/secrets.yml
 playbooks/inventory
+
+**/.DS_Store
