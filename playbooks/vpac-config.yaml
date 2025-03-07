@@ -43,5 +43,7 @@
       path: /root/SSC600_SW_KVM-1.5.0.cab
       extracted_path: /root
 
-  roles:
-  - kwozyman.vpac
+  tasks:
+  - name: vpac setup
+    ansible.builtin.include_role:
+      name: kwozyman.vpac
