@@ -5,8 +5,9 @@
   gather_facts: yes
   
   vars_files:
+  - vars/secrets.yml
   - vats/vpac-settings.yaml
-    
+  
   tasks:
   - name: vpac setup
     ansible.builtin.include_role:

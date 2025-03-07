@@ -2,6 +2,8 @@
 - name: Configure Timesync
   hosts: vpac-rhel-200
   gather_facts: yes
+  vars_files:
+  - vars/secrets.yml
   vars:
     rt_config:
       non_rt_cores_cat: f
@@ -18,7 +20,7 @@
         - "{{ rt_config.nic }}"
         transport: L2
     timesync_ntp_servers:
-    - hostname: 172.16.11.254
+    - hostname: "{{ ntp_server }}"
       iburst: true
 
   roles:

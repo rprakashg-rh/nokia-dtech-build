@@ -1,7 +1,7 @@
 vpac_network:
   station_nic: ens1f1
-  ip4: "172.16.1.201/22"
-  gw4: 172.16.8.1
+  ip4: "{{ station_nic_ipv4 }}"
+  gw4: "{{ gateway_ip }}"
   dns4: 8.8.8.8
 
 profile: realtime-virtual-host

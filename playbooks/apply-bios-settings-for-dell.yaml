@@ -5,8 +5,6 @@
   gather_facts: no
   vars_files:
   - vars/secrets.yml
-  vars:
-    idrac_host: ""
   tasks:
   - name: Disable Turbo Boost
     dellemc.openmanage.idrac_redfish_config:
