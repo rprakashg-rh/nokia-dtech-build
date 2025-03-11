@@ -1,0 +1,22 @@
+---
+- name: Testing Cab extract
+  hosts: imagebuilder
+  become: true
+  gather_facts: yes
+  vars:
+    cab_file: "/Users/rgopinat/cab/SSC600_SW_KVM-1.5.0.cab"
+  tasks:
+  - name: Copy cab file to server
+    ansible.builtin.copy:
+      src: "{{ cab_file }}"
+      dest: "/home/admin/"
+  
+  - name: Extract cab file
+    ansible.builtin.shell: | 
+      cabextract -d /home/admin/abb /home/admin/SSC600_SW_KVM-1.5.0.cab
+  
+  - name: Unarchive disk image
+    ansible.builtin.unarchive:
+      src: "/home/admin/abb/virtual_products/ssc600_disk.img.gz"
+      dest: "/home/admin/abb/virtual_products/"
+      remote_src: true

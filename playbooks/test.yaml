@@ -1,0 +1,19 @@
+---
+- name: "Check if the system is Dell"
+  hosts: imagebuilder
+  gather_facts: true
+  become: true
+  tasks:
+  #- name: Get system manufacturer
+  #  command: "dmidecode -s system-manufacturer"
+  #  register: manufacturer_output
+  #  changed_when: false
+
+  #- name: Display manufacturer
+  #  debug:
+  #    msg: "Manufacturer: {{ manufacturer_output.stdout }}"
+
+  #- name: Fail if not Dell
+  #  fail:
+  #    msg: "This system is not a Dell machine!"
+  #  when: "'Dell' not in manufacturer_output.stdout"

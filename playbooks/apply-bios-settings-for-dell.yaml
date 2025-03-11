@@ -6,65 +6,28 @@
   vars_files:
   - vars/secrets.yml
   tasks:
-  - name: Disable Turbo Boost
-    dellemc.openmanage.idrac_redfish_config:
-      idrac_ip: "{{ idrac_host }}"
-      idrac_user: "{{ idrac_username }}"
-      idrac_password: "{{ idrac_password }}"
-      command: "SetAttributes"
-      attributes:
-        "ProcessorSettings.ProcTurboMode": "Disabled"
-
-  - name: Disable Hyper-Threading
-    dellemc.openmanage.idrac_redfish_config:
-      idrac_ip: "{{ idrac_host }}"
-      idrac_user: "{{ idrac_username }}"
-      idrac_password: "{{ idrac_password }}"
-      command: "SetAttributes"
-      attributes:
-        "ProcessorSettings.ProcHyperThreading": "Disabled"
-
-  - name: Disable all power management
-    block:
-    - name: Disable C-States
-      dellemc.openmanage.idrac_redfish_config:
-        idrac_ip: "{{ idrac_host }}"
-        idrac_user: "{{ idrac_username }}"
-        idrac_password: "{{ idrac_password }}"
-        command: "SetAttributes"
-        attributes:
-          "ProcessorSettings.ProcCStates": "Disabled"
-    - name: Set Power Management Policy to Maximum Performance
-      dellemc.openmanage.idrac_redfish_config:
-        idrac_ip: "{{ idrac_host }}"
-        idrac_user: "{{ idrac_username }}"
-        idrac_password: "{{ idrac_password }}"
-        command: "SetAttributes"
-        attributes:
-          "BiosSettings.PowerProfile": "MaxPerformance"
-    - name: Disable Energy Efficient Policy
-      dellemc.openmanage.idrac_redfish_config:
-        idrac_ip: "{{ idrac_host }}"
-        idrac_user: "{{ idrac_username }}"
-        idrac_password: "{{ idrac_password }}"
-        command: "SetAttributes"
-        attributes:
-          "ProcessorSettings.ProcEnergyPerfBias": "Performance"
-
-  - name: Enable Virtualization Technology (VT-x/VMX)
-    dell.dellemc_idrac.idrac_redfish_config:
-      idrac_ip: "{{ idrac_host }}"
+  - name: Set BIOS attributes
+    dellemc.openmanage.idrac_bios:
+      idrac_ip: "{{ idrac_ip }}"
       idrac_user: "{{ idrac_user }}"
       idrac_password: "{{ idrac_password }}"
-      category: "Bios"
-      command: "SetAttributes"
+      validate_certs: no
       attributes:
-        "ProcVirtualization": "Enabled"
+        ProcTurboMode: "Disabled"     # Disable Turbo Boost
+        LogicalProc: "Disabled"       # Disable Hyper-Threading
+        SysProfile: "Performance"     # Set System Profile to Performance mode
+        ProcCStates: "Disabled"       # Disable CPU Power Management
+        ProcPwrPerf: "MaximumPerformance"  # Set CPU Performance to Max
+        MemFrequency: "MaxPerformance"    # Optimize Memory Speed
+        WorkloadProfile: "NotConfigured"  # Ensure manual control
+        VirtualizationTechnology: "Enabled"  # Enable Virtualization
+    register: bios_result
 
-  - name: Apply Changes and Reboot
-    dellemc.openmanage.idrac_redfish_config:
-      idrac_ip: "{{ idrac_host }}"
-      idrac_user: "{{ idrac_username }}"
+  - name: Apply BIOS settings (Reboot Required)
+    dellemc.openmanage.idrac_job:
+      idrac_ip: "{{ idrac_ip }}"
+      idrac_user: "{{ idrac_user }}"
       idrac_password: "{{ idrac_password }}"
-      command: "ApplySettings"
-      reset_type: "GracefulRestart"
+      validate_certs: no
+      job_id: "{{ bios_result.job_id }}"
+      job_wait: true

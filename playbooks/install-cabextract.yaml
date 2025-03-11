@@ -1,0 +1,25 @@
+---
+- name: Testing Cab extract
+  hosts: imagebuilder
+  become: true
+  gather_facts: yes
+  tasks:
+  - name: Enable EPEL repos
+    block:
+    - name: Enable CodeReady linux builder repo
+      community.general.rhsm_repository:
+        name: "codeready-builder-for-rhel-9-{{ ansible_architecture }}-rpms"
+        state: enabled
+    - name: "Install Epel release"
+      ansible.builtin.dnf:
+        state: latest
+        name: "{{ packages }}"
+        disable_gpg_check: true
+      vars:
+        packages:
+        - https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+  
+  - name: Install Cab extract
+    ansible.builtin.dnf:
+      state: latest
+      name: "cabextract"

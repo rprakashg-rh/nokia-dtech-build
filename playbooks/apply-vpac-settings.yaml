@@ -8,7 +8,5 @@
   - vars/secrets.yml
   - vars/vpac-settings.yaml
   
-  tasks:
-  - name: vpac setup
-    ansible.builtin.include_role:
-      name: kwozyman.vpac
+  roles:
+  - vpac
