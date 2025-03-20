@@ -9,7 +9,7 @@
       options:
       - name: quiet
         state: absent
-      - name: default_hugepagesz
+      - name: default_hugepages
         value: 1GB
       - name: idle
         value: poll
